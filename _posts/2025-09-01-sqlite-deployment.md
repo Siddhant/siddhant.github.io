@@ -7,11 +7,12 @@ categories: database, SQLite
 
 # Planning SQLite Deployment to Production
 
-SQLite is often overlooked for production deployments, but it can be an excellent choice for small to medium applications. Here's how to plan your SQLite deployment strategy.
+SQLite is a simple database, but even then, its production deployment can be tricky.
+Here's how to plan your SQLite deployment strategy, including testing, development and maintenance.
 
 # Timeline
-Day 0 - when you deploy your application for the first time
-DAy 1 - the first day when your applicaiotn is "open for business"
+- Day 0 - when you deploy your application for the first time
+- Day 1 - the first day when your applicaiotn is "open for business"
 
 # Code organization
 Below is the complete set of files and scripts you'll need:
@@ -21,6 +22,7 @@ scripts/
   install-upgrade-sqlite.sh
   copy-db-prod-to-dev.sh
   db-maintenance.sh
+  day-0.sh
 database/
   db/
     development/
@@ -31,26 +33,29 @@ database/
       my-app-test.sqlite
   sql/
     00-schema-init.sql
-    00-data-init.sql
-    01-schema-add-column-abc.sql
-    02-data-add-historical.sql
-    05-schema-add-table5.sql
+    01-data-init.sql
+    02-schema-add-column-abc.sql
+    03-data-add-historical.sql
+    04-schema-add-table5.sql
 ```
 
 Here is the purpose of each directory/file:
-| Path                                 | Description                                      |
-|--------------------------------------|--------------------------------------------------|
-| .gitignore                           | Specifies files and directories to be ignored by git, including the production database. |
-| scripts/                             | Contains utility scripts for database management and deployment. |
-| scripts/copy-db-prod-to-dev.sh       | Script to copy the production database to the development environment for testing or debugging. |
-| database/                            | Root directory for all database-related files.    |
-| database/db/                         | Contains environment-specific SQLite database files. |
-| database/db/development/             | Stores the developer-specific SQLite database files. Should never be checked into version control. |
-| database/db/production/              | Stores the temporary copy of production SQLite database file. Should never be checked into version control. |
-| database/db/production/my-app-prod-2025-09-01.sqlite | A temporary copy of the prod db file. Always suffixed with the date (and time) of copy. |
-| database/db/test/                    | Test data for the project's unit tests. Should be checked into version control. |
-| database/sql/                        | Contains SQL scripts for schema and data management. |
-| database/sql/00-data-init.sql        | SQL script to seed the production database with initial data. For one-time execution only.|
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `.gitignore`                                              | Specifies files and directories to be ignored by git, including the production database.       |
+| `scripts/`                                                | Contains utility scripts for database management and deployment.                               |
+| `scripts/copy-db-prod-to-dev.sh`                          | Script to copy the production database to the development environment for testing or debugging.|
+| `database/`                                               | Root directory for all database-related files.                                                 |
+| `database/db/`                                            | Contains environment-specific SQLite database files.                                           |
+| `database/db/development/`                                | Stores the developer-specific SQLite database files. Should never be checked into version control. |
+| `database/db/production/`                                 | Stores the temporary copy of production SQLite database file. Should never be checked into version control. |
+| `database/db/production/my-app-prod-2025-09-01.sqlite`    | A temporary copy of the prod db file. Always suffixed with the date (and time) of copy.        |
+| `database/db/test/`                                       | Stores test data for the project's unit tests. Should be checked into version control.                |
+| `database/db/test/my-app-test.sqlite`                     | Test data for the project's unit tests. Should be checked into version control.                |
+| `database/sql/`                                           | Contains SQL scripts for schema and data management. Monotonically increasing numbered prefix for all files. |
+| `database/sql/00-schema-init.sql`                         | SQL script to create an empty db with all the schemas. For one-time execution (Day 0) only.            |
+| `database/sql/01-data-init.sql`                           | SQL script to seed the production database with initial data. For one-time execution (Day 0) only.     |
 
 
 ## .gitignore
@@ -60,7 +65,16 @@ database/db/production/*
 ```
 
 
-## Data Seeding Strategy
+# Day 0 - Production Deployment
+Script used: day-0.sh
+
+## Create db
+Before you open for business, you'll of course want to create an empty db file with schema.
+
+## Data Seeding
+We often have data which we want to be present in our db even before we are "open for business".
+For example, reference data tables, historical data, etc.
+Hence, on Day 0, you'll want to execute 
 
 **Development Environment:**
 - Use sample data that mimics production structure
