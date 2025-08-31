@@ -1,9 +1,8 @@
 ---
 layout: post
 title: "Planning SQLite Deployment to Production"
-date: 2025-09-01
-categories: [Database, Deployment, SQLite]
-tags: [sqlite, production, deployment, database]
+date: 2025-09-01 02:28:47 +0530
+categories: database, SQLite
 ---
 
 # Planning SQLite Deployment to Production
