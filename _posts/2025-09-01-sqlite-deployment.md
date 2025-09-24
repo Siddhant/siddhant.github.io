@@ -8,10 +8,10 @@ categories: database, SQLite
 SQLite is a simple database, but even then, its production deployment can be complex and tricky.
 Here's how to plan your SQLite deployment strategy, including testing, development and maintenance.
 
-Assumptions:
+# Assumptions:
 1. This guide assumes your project uses a single SQLite database. If your application requires multiple SQLite databases, you will need to adjust the architecture and deployment procedures accordingly.
 
-## Table of Contents
+# Table of Contents
 - [Timeline](#timeline)
 - [Code & Data Organization](#code-organization)
 - [Day 0 - Production Deployment](#day-0---production-deployment)
@@ -27,6 +27,10 @@ Assumptions:
 - `Day 0` - when you deploy your application to production for the first time
 - `Day 1` - the first day when your applicaiotn is "open for business"
 - `Day B` - day on which a backup is done
+
+# Environemnts
+- development
+- production
 
 # Code & Data organization
 Below is a comprehensive list of the database files, Bash scripts, and Python scripts you will need, along with a suggested directory structure:
@@ -62,24 +66,50 @@ database/
 
 Here is the purpose of each directory/file:
 
+## Root Files
+
 | Path                                                      | Description                                                                                   |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `.gitignore`                                              | Specifies files and directories to be ignored by git, including the production database.       |
-
 | `database/`                                               | Root directory for all database-related files: actual db files, utility scripts, and data files.        |
-| `database/db/`                                            | Contains environment-specific SQLite database files.                                           |
-| `database/db/development/`                                | If required, stores the developer-specific SQLite database files. These files should *never* be checked into version control. |
-| `database/db/production/`                                 | If required, stores any temporary copy of production SQLite database file. These files should *never* be checked into version control. |
-| `database/db/production/my-app-prod-2025-09-01.sqlite`    | A temporary copy of the prod db file. Always suffixed with the date (and time) of copy.        |
-| `database/db/test/`                                       | Stores test data for the project's unit tests. Should be checked into version control.                |
-| `database/db/test/my-app-test.sqlite`                     | Test data for the project's unit tests. Should be checked into version control.                |
+
+## Database Files (`database/db/`)
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `../db/`                                            | Contains environment-specific SQLite database files.                                           |
+| `../db/development/`                                | If required, stores the developer-specific SQLite database files. These files should *never* be checked into version control. |
+| `../db/production/`                                 | If required, stores any temporary copy of production SQLite database file. These files should *never* be checked into version control. |
+| `../db/production/my-app-prod-2025-09-01.sqlite`    | A temporary copy of the prod db file. Always suffixed with the date (and time) of copy.        |
+| `../db/test/`                                       | Stores test data for the project's unit tests. Should be checked into version control.                |
+| `../db/test/my-app-test.sqlite`                     | Test data for the project's unit tests. Should be checked into version control.                |
+
+## Scripts (`database/scripts/`)
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `database/scripts/`                                       | Contains utility scripts for database management and deployment.                               |
 | `database/scripts/copy-db-prod-to-dev.sh`                 | Script to copy the production database to the development environment, for testing or debugging.|
 | `database/scripts/db-constants.sh`                        | Script containing common constants related to our db. To be used by all other scripts.|
+
+## SQL Scripts (`database/sql/`)
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `database/sql/`                                           | Contains SQL scripts for schema and data management. Monotonically increasing numbered prefix for all files. Treat files in this folder as **immutable** once they have been executed in production.|
 | `database/sql/00-schema-init.sql`                         | SQL script to create an empty db with all the schemas. For one-time execution (Day 0) only.            |
 | `database/sql/01-data-init.sql`                           | SQL script to seed the production database with initial data. For one-time execution (Day 0) only.     |
+
+## Data Files (`database/data/`)
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `database/data/`                                          | Place to store any (small) data files. E.g. test data, or reference data files for Day-0, etc. |
+
+## Logs (`database/logs/`)
+
+| Path                                                      | Description                                                                                   |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `database/logs/`                                          | Directory for SQL command logs and database operation logs. Files in this folder should *never* be checked into version control. |
 
 # Day 0 - Production Deployment
