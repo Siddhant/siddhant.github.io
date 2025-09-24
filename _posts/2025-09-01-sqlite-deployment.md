@@ -8,6 +8,9 @@ categories: database, SQLite
 SQLite is a simple database, but even then, its production deployment can be complex and tricky.
 Here's how to plan your SQLite deployment strategy, including testing, development and maintenance.
 
+Assumptions:
+1. This guide assumes your project uses a single SQLite database. If your application requires multiple SQLite databases, you will need to adjust the architecture and deployment procedures accordingly.
+
 ## Table of Contents
 - [Timeline](#timeline)
 - [Code & Data Organization](#code-organization)
@@ -19,21 +22,16 @@ Here's how to plan your SQLite deployment strategy, including testing, developme
   - [.gitignore](#gitignore)
   - [db-constants.sh](#db-constantssh)
   - [day-0.sh](#day-0sh)
-
+ 
 # Timeline
 - `Day 0` - when you deploy your application to production for the first time
 - `Day 1` - the first day when your applicaiotn is "open for business"
+- `Day B` - day on which a backup is done
 
 # Code & Data organization
 Below is a comprehensive list of the database files, Bash scripts, and Python scripts you will need, along with a suggested directory structure:
 ```tree
 .gitignore
-scripts/
-  install-upgrade-sqlite.sh
-  copy-db-prod-to-dev.sh
-  db-constants.sh
-  db-maintenance.sh
-  day-0.sh
 database/
   db/
     development/
@@ -42,6 +40,12 @@ database/
       my-app-prod-2025-09-01.sqlite
     test/
       my-app-test.sqlite
+  scripts/
+    install-upgrade-sqlite.sh
+    copy-db-prod-to-dev.sh
+    db-constants.sh
+    db-maintenance.sh
+    day-0.sh
   sql/
     00-schema-init.sql
     01-data-init.sql
@@ -49,7 +53,11 @@ database/
     03-data-add-historical.sql
     04-schema-add-table5.sql
   data/
+    01-reference-data.csv
     03-historical.csv
+  logs/
+    sql-commands.log
+    database-operations.log
 ```
 
 Here is the purpose of each directory/file:
@@ -57,20 +65,22 @@ Here is the purpose of each directory/file:
 | Path                                                      | Description                                                                                   |
 | --------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | `.gitignore`                                              | Specifies files and directories to be ignored by git, including the production database.       |
-| `scripts/`                                                | Contains utility scripts for database management and deployment.                               |
-| `scripts/copy-db-prod-to-dev.sh`                          | Script to copy the production database to the development environment, for testing or debugging.|
-| `scripts/db-constants.sh`                                 | Script containing common constants related to our db. To be used by all other scripts.|
-| `database/`                                               | Root directory for all database-related files.                                                 |
+
+| `database/`                                               | Root directory for all database-related files: actual db files, utility scripts, and data files.        |
 | `database/db/`                                            | Contains environment-specific SQLite database files.                                           |
 | `database/db/development/`                                | If required, stores the developer-specific SQLite database files. These files should *never* be checked into version control. |
 | `database/db/production/`                                 | If required, stores any temporary copy of production SQLite database file. These files should *never* be checked into version control. |
 | `database/db/production/my-app-prod-2025-09-01.sqlite`    | A temporary copy of the prod db file. Always suffixed with the date (and time) of copy.        |
 | `database/db/test/`                                       | Stores test data for the project's unit tests. Should be checked into version control.                |
 | `database/db/test/my-app-test.sqlite`                     | Test data for the project's unit tests. Should be checked into version control.                |
+| `database/scripts/`                                       | Contains utility scripts for database management and deployment.                               |
+| `database/scripts/copy-db-prod-to-dev.sh`                 | Script to copy the production database to the development environment, for testing or debugging.|
+| `database/scripts/db-constants.sh`                        | Script containing common constants related to our db. To be used by all other scripts.|
 | `database/sql/`                                           | Contains SQL scripts for schema and data management. Monotonically increasing numbered prefix for all files. Treat files in this folder as **immutable** once they have been executed in production.|
 | `database/sql/00-schema-init.sql`                         | SQL script to create an empty db with all the schemas. For one-time execution (Day 0) only.            |
 | `database/sql/01-data-init.sql`                           | SQL script to seed the production database with initial data. For one-time execution (Day 0) only.     |
-| `database/data/`                                          | Stores data files for Day-0, and maintenance scripts. |
+| `database/data/`                                          | Place to store any (small) data files. E.g. test data, or reference data files for Day-0, etc. |
+| `database/logs/`                                          | Directory for SQL command logs and database operation logs. Files in this folder should *never* be checked into version control. |
 
 # Day 0 - Production Deployment
 Script used: `day-0.sh`
@@ -134,6 +144,9 @@ SQLite can handle production workloads effectively when properly planned and mai
 # Though we do want to check in these as empty folders.
 database/db/development/*
 database/db/production/*
+
+# Ignore log files but keep the logs directory
+database/logs/*
 ```
 
 ## db-constants.sh
@@ -155,6 +168,7 @@ DB_PROD_DIR="$DB_ROOT_DIR/production"
 DB_DEV_DIR="$DB_ROOT_DIR/development"
 DB_TEST_DIR="$DB_ROOT_DIR/test"
 SQL_DIR="database/sql"
+LOGS_DIR="database/logs"
 
 # File Extensions
 DB_EXTENSION=".sqlite"
@@ -191,6 +205,9 @@ echo "🚀 Starting Day 0 database setup..."
 
 # Create production database directory if it doesn't exist
 mkdir -p "$DB_PROD_DIR"
+
+# Create logs directory if it doesn't exist
+mkdir -p "$LOGS_DIR"
 
 # Create empty database file
 echo "📁 Creating database: $DB_PROD_FILE"
