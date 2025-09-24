@@ -23,7 +23,7 @@ Here's how to plan your SQLite deployment strategy, including testing, developme
   - [.gitignore](#gitignore)
   - [db-constants.sh](#db-constantssh)
   - [day-0.sh](#day-0sh)
- 
+
 # Timeline
 - `Day 0` - when you deploy your application to production for the first time
 - `Day 1` - the first day when your applicaiotn is "open for business"
@@ -173,7 +173,7 @@ SQLite can handle production workloads effectively when properly planned and mai
 
 ## .gitignore
 ```
-# Ignore any files in dev and prod folders.
+# Ignore any actual database files in dev and prod folders.
 # Though we do want to check in these as empty folders.
 database/db/development/*
 database/db/production/*
