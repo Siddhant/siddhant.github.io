@@ -9,11 +9,12 @@ SQLite is a simple database, but even then, its production deployment can be com
 Here's how to plan your SQLite deployment strategy, including testing, development and maintenance.
 
 # Assumptions:
-1. This guide assumes your project uses a single SQLite database. If your application requires multiple SQLite databases, you will need to adjust the architecture and deployment procedures accordingly.
+1. Overall, this guide is for simple deployments. 
+2. This guide assumes your project uses a single SQLite database. If your application requires multiple SQLite databases, you will need to adjust the architecture and deployment procedures accordingly.
 
 # Table of Contents
 - [Timeline](#timeline)
-- [Environemnts](#environemnts)
+- [Environments](#environments)
 - [Code & Data organization](#code--data-organization)
 - [Day 0 - Production Deployment](#day-0---production-deployment)
 - [Testing Data Management](#testing-data-management)
@@ -26,12 +27,13 @@ Here's how to plan your SQLite deployment strategy, including testing, developme
 
 # Timeline
 - `Day 0` - when you deploy your application to production for the first time
-- `Day 1` - the first day when your applicaiotn is "open for business"
+- `Day 1` - the first day when your application is "open for business"
 - `Day B` - day on which a backup is done
 
-# Environemnts
-- development
-- production
+# Environments
+- **development** - for local development and manual testing by developers
+- **test** - for automated unit and integration tests
+- **production** - the live environment serving real users
 
 # Code & Data organization
 Below is a comprehensive list of the database files, Bash scripts, and Python scripts you will need, along with a suggested directory structure:
@@ -142,17 +144,13 @@ For example, reference data tables, historical data, etc.
 - Verify constraints and triggers work correctly
 - Ensure proper error handling for invalid data
 
-# Production Data Considerations
-
+# Further Production Data Considerations
+Below we mention some further considerations when deploying a SQLite db in produciton. These are howver beyond the scope of this 
+current blog post.
 **Backup Strategy:**
 - Implement automated daily backups
 - Use WAL mode for better concurrency
 - Consider point-in-time recovery options
-
-**Performance Optimization:**
-- Create appropriate indexes for query patterns
-- Use prepared statements to avoid recompilation
-- Monitor query performance in production
 
 **Data Migration:**
 - Plan schema changes carefully
@@ -209,7 +207,7 @@ DB_EXTENSION=".sqlite"
 # Database Files
 DB_PROD_FILE="$DB_PROD_DIR/${DB_NAME_PROD}${DB_EXTENSION}"
 DB_DEV_FILE="$DB_DEV_DIR/${DB_NAME_DEV}${DB_EXTENSION}"
-DB_TEST_FILE="$DB_TEST_DIR/${DB_TEST_NAME}${DB_EXTENSION}"
+DB_TEST_FILE="$DB_TEST_DIR/${DB_NAME_TEST}${DB_EXTENSION}"
 
 # SQL Scripts
 SCHEMA_INIT_SCRIPT="$SQL_DIR/00-schema-init.sql"
@@ -245,6 +243,10 @@ mkdir -p "$LOGS_DIR"
 # Create empty database file
 echo "📁 Creating database: $DB_PROD_FILE"
 sqlite3 "$DB_PROD_FILE" ".databases"
+
+# Enable WAL mode for better concurrency
+echo "⚙️  Enabling WAL mode..."
+sqlite3 "$DB_PROD_FILE" "PRAGMA journal_mode=WAL;"
 
 # Execute schema initialization
 echo "🔧 Initializing schema..."
