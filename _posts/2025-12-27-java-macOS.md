@@ -11,7 +11,7 @@ This post is written for experienced developers who are new to macOS and want a 
 
 - Apple Silicon (M-series chips such as M1, M2, M3, or later) - all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
 - macOS Tahoe 26.1
-- Java 25 (LTS) — ALWAYS use the LTS version only for more info refer  [Java Almanac](https://javaalmanac.io/)
+- Java 25 (LTS) — ALWAYS use the LTS version only; for more info refer  [Java Almanac](https://javaalmanac.io/)
 
 ---
 
@@ -28,7 +28,7 @@ But **macOS does not ship a JDK**.
 
 This distinction matters.
 
-When you type:
+Take a look at the output when you type `java`:
 
 ```bash
 $ java
@@ -382,6 +382,7 @@ A matrix of installation methods and JDK vendor/version availability:
       <th>Version</th>
       <th style="text-align: center;">Homebrew</th>
       <th style="text-align: center;">mise</th>
+      <th style="text-align: center;">SDKMAN</th>
     </tr>
   </thead>
   <tbody>
@@ -390,25 +391,30 @@ A matrix of installation methods and JDK vendor/version availability:
       <td>8</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>11</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
       <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>17</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>21</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>25</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
       <td style="text-align: center;"></td>
     </tr>
     <tr>
@@ -416,25 +422,30 @@ A matrix of installation methods and JDK vendor/version availability:
       <td>8</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>11</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
       <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>17</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>21</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;"></td>
     </tr>
     <tr>
       <td>25</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
       <td style="text-align: center;"></td>
     </tr>
     <tr>
@@ -442,9 +453,11 @@ A matrix of installation methods and JDK vendor/version availability:
       <td>8</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;"></td>
+      <td style="text-align: center;">{{ check }}</td>
     </tr>
     <tr>
       <td>11</td>
+      <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
     </tr>
@@ -452,14 +465,17 @@ A matrix of installation methods and JDK vendor/version availability:
       <td>17</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
     </tr>
     <tr>
       <td>21</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
     </tr>
     <tr>
       <td>25</td>
+      <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
       <td style="text-align: center;">{{ check }}</td>
     </tr>
