@@ -1,21 +1,17 @@
 ---
 layout: post
-title: "Setting Up Java on macOS in 2025"
+title: "Setting Up Java on macOS in 2025 — A Practical, Opinionated Guide for Experienced Developers"
 date: 2025-12-27 11:07:47 +0530
 categories: java, macOS
 ---
 
-# Setting Up Java on macOS in 2025 — A Practical, Opinionated Guide for Experienced Developers
+{% assign check = '<span style="color: #28a745;">✓</span>' %}
 
-This post is written for experienced developers who are new to macOS and want a **clean, modern, and future-proof Java setup**. The focus is deliberately narrow:
+This post is written for experienced developers who are new to macOS and want a **clean, modern, and professional-grade Java setup**. The focus is deliberately narrow. We will not cover basics like "What is the difference between JRE and JDK?". We *will* explain, in deailt, macOS-specific Java behavior, vendor differences, and why certain approaches scale better over time.
 
-- **macOS (latest versions)**
-- **Java 25 (LTS)**
-- **Professional-grade workflows**
-- **Clear trade-offs between installation methods**
-- **Minimal hand-holding, maximal correctness**
-
-We will not teach Homebrew, Git, or shell basics. We *will* explain macOS-specific Java behavior, vendor differences, and why certain approaches scale better over time.
+- Apple Silicon (M-series chips such as M1, M2, M3, or later) - all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
+- macOS Tahoe 26.1
+- Java 25 (LTS) — ALWAYS use the LTS version only for more info refer  [Java Almanac](https://javaalmanac.io/)
 
 ---
 
@@ -373,3 +369,103 @@ No IDE-specific installation steps are required if Java is configured correctly 
 - Homebrew: https://brew.sh
 - asdf: https://asdf-vm.com
 - mise: https://mise.jdx.dev
+
+---
+Appendix 1
+
+A matrix of installation methods and JDK vendor/version availability:
+
+<table>
+  <thead>
+    <tr>
+      <th>JDK Vendor</th>
+      <th>Version</th>
+      <th style="text-align: center;">Homebrew</th>
+      <th style="text-align: center;">mise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="5"><b>OpenJDK</b></td>
+      <td>8</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td rowspan="5"><b>Amazon Corretto</b></td>
+      <td>8</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td rowspan="5"><b>Eclipse Temurin</b></td>
+      <td>8</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;"></td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td style="text-align: center;">{{ check }}</td>
+      <td style="text-align: center;">{{ check }}</td>
+    </tr>
+  </tbody>
+</table>
+
+*Table: JDK version availability by installation tool (as of Dec 2025)*
+
+
