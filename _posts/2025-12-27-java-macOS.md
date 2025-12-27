@@ -13,9 +13,40 @@ This post is written for experienced developers who are new to macOS and want a 
 - macOS Tahoe 26.1
 - Java 25 (LTS) — ALWAYS use the LTS version only; for more info refer  [Java Almanac](https://javaalmanac.io/)
 
+# Table of Contents
+- [Why Java Setup on macOS Is “Different”](#why-java-setup-on-macos-is-different)
+- [Java 25 LTS: Why LTS Is the Only Sensible Default](#java-25-lts-why-lts-is-the-only-sensible-default)
+- [JDK Vendors You Should Care About](#jdk-vendors-you-should-care-about)
+  - [1. Oracle OpenJDK](#1-oracle-openjdk)
+  - [2. Eclipse Temurin (Adoptium)](#2-eclipse-temurin-adoptium)
+  - [3. Amazon Corretto](#3-amazon-corretto)
+- [macOS Java Internals You Must Understand](#macos-java-internals-you-must-understand)
+  - [/usr/bin/java — The Apple Java Wrapper](#usrbinjava--the-apple-java-wrapper)
+  - [/usr/libexec/java_home — The Brain](#usrlibexecjava_home--the-brain)
+- [Installing Java on macOS — All Major Options](#installing-java-on-macos--all-major-options)
+  - [1. GUI Installers (DMG / PKG)](#1-gui-installers-dmg--pkg)
+  - [2. Homebrew](#2-homebrew)
+  - [3. SDKMAN](#3-sdkman)
+  - [4. asdf](#4-asdf)
+  - [5. mise (formerly rtx)](#5-mise-formerly-rtx)
+  - [6. Foojay (Discovery + Gradle Integration)](#6-foojay-discovery--gradle-integration)
+- [Setting JAVA_HOME Correctly on macOS](#setting-java_home-correctly-on-macos)
+  - [Recommended (Dynamic)](#recommended-dynamic)
+  - [Manual (Static, Not Recommended Long-Term)](#manual-static-not-recommended-long-term)
+- [IDE Integration (High Level)](#ide-integration-high-level)
+  - [IntelliJ IDEA](#intellij-idea)
+  - [Eclipse](#eclipse)
+  - [VS Code](#vs-code)
+- [Recommended Setups (Opinionated)](#recommended-setups-opinionated)
+  - [Single-JDK, Minimal Setup](#single-jdk-minimal-setup)
+  - [Multi-Project, Multi-JDK](#multi-project-multi-jdk)
+  - [CI-First, Zero Drift](#ci-first-zero-drift)
+- [Official Links](#official-links)
+- [Appendix 1](#appendix-1)
+
 ---
 
-## Why Java Setup on macOS Is “Different”
+# Why Java Setup on macOS Is "Different"
 
 On Linux, Java setup is mostly transparent. On Windows, it is explicit.  
 On macOS, Java is **subtle**.
@@ -40,7 +71,7 @@ macOS may respond with a dialog prompting you to install Java — even though no
 
 Understanding this wrapper is key to avoiding confusion later.
 
-## Java 25 LTS: Why LTS Is the Only Sensible Default
+# Java 25 LTS: Why LTS Is the Only Sensible Default
 
 Java 25 is a Long-Term Support (LTS) release. For most developers:
 - LTS versions receive security updates
@@ -61,7 +92,7 @@ To verify the current LTS release, rely on:
 
 ---
 
-## JDK Vendors You Should Care About
+# JDK Vendors You Should Care About
 
 All modern JDKs are built from OpenJDK, but vendors differ in:
 - Licensing
@@ -69,7 +100,7 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 - Long-term guarantees
 - Enterprise friendliness
 
-### 1. Oracle OpenJDK
+## 1. Oracle OpenJDK
 
 Homepage: https://jdk.java.net
 - Reference implementation
@@ -81,7 +112,7 @@ Good for: purity, experimentation, staying closest to upstream.
 
 ---
 
-### 2. Eclipse Temurin (Adoptium)
+## 2. Eclipse Temurin (Adoptium)
 
 Homepage: https://adoptium.net
 - Community-backed
@@ -93,7 +124,7 @@ Good for: most developers, teams, CI pipelines.
 
 ---
 
-### 3. Amazon Corretto
+## 3. Amazon Corretto
 
 Homepage: https://aws.amazon.com/corretto/
 - Long-term patches
@@ -104,9 +135,9 @@ Good for: backend services, cloud-native Java, long-lived systems.
 
 ---
 
-## macOS Java Internals You Must Understand
+# macOS Java Internals You Must Understand
 
-### /usr/bin/java — The Apple Java Wrapper
+## /usr/bin/java — The Apple Java Wrapper
 
 This binary:
 - Is provided by macOS
@@ -117,7 +148,7 @@ It is not the Java executable from your JDK.
 
 ---
 
-### /usr/libexec/java_home — The Brain
+## /usr/libexec/java_home — The Brain
 
 This utility:
 - Discovers installed JDKs
@@ -126,9 +157,9 @@ This utility:
 
 ---
 
-## Installing Java on macOS — All Major Options
+# Installing Java on macOS — All Major Options
 
-### 1. GUI Installers (DMG / PKG)
+## 1. GUI Installers (DMG / PKG)
 
 **Oracle / Adoptium / Corretto DMG**
 - Download a `.dmg`
@@ -149,7 +180,7 @@ This utility:
 
 ---
 
-### 2. Homebrew
+## 2. Homebrew
 
 Homepage: https://brew.sh
 
@@ -178,7 +209,7 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 25)
 
 ---
 
-### 3. SDKMAN
+## 3. SDKMAN
 
 Homepage: https://sdkman.io
 
@@ -207,7 +238,7 @@ sdk use java 25-tem
 
 ---
 
-### 4. asdf
+## 4. asdf
 
 Homepage: https://asdf-vm.com
 
@@ -231,7 +262,7 @@ asdf global java temurin-25
 
 ---
 
-### 5. mise (formerly rtx)
+## 5. mise (formerly rtx)
 
 Homepage: https://mise.jdx.dev
 
@@ -255,7 +286,7 @@ mise use -g java@25
 
 ---
 
-### 6. Foojay (Discovery + Gradle Integration)
+## 6. Foojay (Discovery + Gradle Integration)
 
 Homepage: https://foojay.io
 
@@ -298,9 +329,9 @@ Gradle will:
 
 ---
 
-## Setting JAVA_HOME Correctly on macOS
+# Setting JAVA_HOME Correctly on macOS
 
-### Recommended (Dynamic)
+## Recommended (Dynamic)
 
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 25)
@@ -311,7 +342,7 @@ This survives:
 - Patch updates
 - Reinstalls
 
-### Manual (Static, Not Recommended Long-Term)
+## Manual (Static, Not Recommended Long-Term)
 
 ```bash
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-25.jdk/Contents/Home
@@ -321,18 +352,18 @@ Use only if you must hard-pin paths.
 
 ---
 
-## IDE Integration (High Level)
+# IDE Integration (High Level)
 
-### IntelliJ IDEA
+## IntelliJ IDEA
 - Auto-detects installed JDKs
 - Supports SDKMAN, Homebrew, DMG installs
 - Best-in-class Java experience on macOS
 
-### Eclipse
+## Eclipse
 - Relies on `JAVA_HOME`
 - Works best with system-installed JDKs
 
-### VS Code
+## VS Code
 - Requires Java extensions
 - Uses `JAVA_HOME` or toolchains
 
@@ -340,25 +371,25 @@ No IDE-specific installation steps are required if Java is configured correctly 
 
 ---
 
-## Recommended Setups (Opinionated)
+# Recommended Setups (Opinionated)
 
-### Single-JDK, Minimal Setup
+## Single-JDK, Minimal Setup
 - Eclipse Temurin DMG
 - `java_home`
 - IntelliJ IDEA
 
-### Multi-Project, Multi-JDK
+## Multi-Project, Multi-JDK
 - SDKMAN or mise
 - Foojay Gradle plugin
 - IntelliJ IDEA
 
-### CI-First, Zero Drift
+## CI-First, Zero Drift
 - Foojay toolchains
 - No global Java dependency
 
 ---
 
-## Official Links
+# Official Links
 
 - OpenJDK: https://openjdk.org
 - Foojay: https://foojay.io
@@ -371,7 +402,8 @@ No IDE-specific installation steps are required if Java is configured correctly 
 - mise: https://mise.jdx.dev
 
 ---
-Appendix 1
+
+# Appendix 1
 
 A matrix of installation methods and JDK vendor/version availability:
 
