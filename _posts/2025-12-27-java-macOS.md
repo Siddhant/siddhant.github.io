@@ -30,6 +30,7 @@ This post is written for experienced developers who are new to macOS and want a 
   - [4. asdf](#4-asdf)
   - [5. mise (formerly rtx)](#5-mise-formerly-rtx)
   - [6. Foojay (Discovery + Gradle Integration)](#6-foojay-discovery--gradle-integration)
+  - [7. IntelliJ IDEA (Not Recommended)](#7-intellij-idea-not-recommended)
 - [Setting JAVA_HOME Correctly on macOS](#setting-java_home-correctly-on-macos)
   - [Recommended (Dynamic)](#recommended-dynamic)
   - [Manual (Static, Not Recommended Long-Term)](#manual-static-not-recommended-long-term)
@@ -92,7 +93,7 @@ To verify the current LTS release, rely on:
 
 ---
 
-# JDK Vendors You Should Care About
+# Select a JDK
 
 All modern JDKs are built from OpenJDK, but vendors differ in:
 - Licensing
@@ -107,42 +108,16 @@ flowchart TD
     A[Need help choosing a JDK?] --> B{whichjdk.com}
     B -->|You found a match| C[Pick the JDK that fits your case]
     B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
+    C --> E{Choose an install tool}
+    D --> E
+    E -->|Simple & native| F[Homebrew]
+    E -->|Multi-language polyglot| G[mise]
+    E -->|Java-focused| H[SDKMAN]
+    E -->|IDE-only| I[IntelliJ IDEA<br/>⚠️ Not recommended]
     click B "https://whichjdk.com" _blank
     style B fill:#e7f3ff,stroke:#0366d6,color:#0366d6
+    style I fill:#fff3cd,stroke:#856404,color:#856404
 ```
-
-## 1. Oracle OpenJDK
-
-Homepage: https://jdk.java.net
-- Reference implementation
-- Free to use
-- Short update window for non-LTS builds
-- Canonical source of truth
-
-Good for: purity, experimentation, staying closest to upstream.
-
----
-
-## 2. Eclipse Temurin (Adoptium)
-
-Homepage: https://adoptium.net
-- Community-backed
-- Widely used in CI/CD
-- Predictable updates
-- Excellent macOS support
-
-Good for: most developers, teams, CI pipelines.
-
----
-
-## 3. Amazon Corretto
-
-Homepage: https://aws.amazon.com/corretto/
-- Long-term patches
-- Conservative defaults
-- Strong production reputation
-
-Good for: backend services, cloud-native Java, long-lived systems.
 
 ---
 
@@ -337,6 +312,28 @@ Gradle will:
 - Requires Gradle
 
 **Recommended if:** You value reproducibility over manual control.
+
+---
+
+## 7. IntelliJ IDEA (Not Recommended)
+
+IntelliJ IDEA can download and install JDKs directly via **Project Structure → SDKs → Download JDK**.
+
+**Why it works**
+- Convenient one-click setup
+- Multiple vendors available
+- Auto-configures project SDK
+
+**Why it's not recommended**
+- Not a proper toolchain manager
+- JDKs are IDE-scoped, not system-wide
+- No CLI access — other tools (Gradle, Maven, terminal) won't see them
+- No version switching across projects
+- Breaks reproducibility across machines
+
+**Use this only if:** You're exploring Java casually and won't use the terminal or CI.
+
+For any serious development, use a proper toolchain manager (Homebrew, SDKMAN, or mise) instead.
 
 ---
 
