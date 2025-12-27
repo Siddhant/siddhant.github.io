@@ -105,7 +105,7 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 
 ```mermaid
 flowchart TD
-    A{Choose a JDK} -->|Someone told me which one| C[Pick the JDK that fits your case]
+    A{Choose a JDK vendor & version} -->|Someone told you which one| C[Pick the JDK that fits your case]
     A -->|Need help| B{whichjdk.com}
     B -->|You found a match| C
     B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
@@ -113,11 +113,22 @@ flowchart TD
     D --> E
     E -->|Simple & native| F[Homebrew]
     E -->|Multi-language polyglot| G[mise]
+    E -->|Still confused| G[mise]
     E -->|Java-focused| H[SDKMAN]
-    E -->|IDE-only| I[IntelliJ IDEA<br/>⚠️ Not recommended]
+    E -->|Build-tool managed; reproducible| J[Gradle Foojay<br/>✓ Recommended]
+    E -->|IDE-based| I[IntelliJ IDEA<br/>⚠️ Not recommended]
     click B "https://whichjdk.com" _blank
-    style B fill:#e7f3ff,stroke:#0366d6,color:#0366d6
+    click F "https://brew.sh" _blank
+    click G "https://mise.jdx.dev" _blank
+    click H "https://sdkman.io" _blank
+    click J "https://docs.gradle.org/current/userguide/toolchains.html" _blank
+    click I "https://www.jetbrains.com/idea/" _blank
+    style B color:#0366d6
     style D fill:#d4edda,stroke:#28a745,color:#155724
+    style F color:#0366d6
+    style G color:#0366d6
+    style H color:#0366d6
+    style J color:#155724
     style I fill:#fff3cd,stroke:#856404,color:#856404
 ```
 
