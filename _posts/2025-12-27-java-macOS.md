@@ -109,9 +109,6 @@ flowchart TD
     B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
 ```
 
-If you're *still* not sure after reading [whicjdk.com](https://whicjdk.com), it's safe and easy to choose **Eclipse Temurin 21 LTS** on macOS.
-
-
 ## 1. Oracle OpenJDK
 
 Homepage: https://jdk.java.net
