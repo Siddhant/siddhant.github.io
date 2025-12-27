@@ -101,11 +101,9 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 - Long-term guarantees
 - Enterprise friendliness
 
-> Still unsure which JDK to pick? Here's a simple flowchart to get you started:
-
 ```mermaid
 flowchart TD
-    A{Choose a JDK vendor & version} -->|Someone told you which one| C[Pick the JDK that fits your case]
+    A{Choose a JDK vendor  &amp; version} -->|Someone told you which one| C[Pick the JDK that fits your case]
     A -->|Need help| B{whichjdk.com}
     B -->|You found a match| C
     B -->|Still confused| D[Eclipse Temurin 21 (LTS)<br>(recommended)]
