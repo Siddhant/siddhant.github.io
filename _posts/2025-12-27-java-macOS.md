@@ -100,6 +100,18 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 - Long-term guarantees
 - Enterprise friendliness
 
+> Still unsure which JDK to pick? Here's a simple flowchart to get you started:
+
+```mermaid
+flowchart TD
+    A[Need help choosing a JDK?] --> B{Visit whicjdk.com}
+    B -->|You found a match| C[Pick the JDK that fits your case]
+    B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
+```
+
+If you're *still* not sure after reading [whicjdk.com](https://whicjdk.com), it's safe and easy to choose **Eclipse Temurin 21 LTS** on macOS.
+
+
 ## 1. Oracle OpenJDK
 
 Homepage: https://jdk.java.net
