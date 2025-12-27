@@ -105,8 +105,9 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 
 ```mermaid
 flowchart TD
-    A[Need help choosing a JDK?] --> B{whichjdk.com}
-    B -->|You found a match| C[Pick the JDK that fits your case]
+    A{Choose a JDK} -->|Someone told me which one| C[Pick the JDK that fits your case]
+    A -->|Need help| B{whichjdk.com}
+    B -->|You found a match| C
     B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
     C --> E{Choose an install tool}
     D --> E
@@ -116,6 +117,7 @@ flowchart TD
     E -->|IDE-only| I[IntelliJ IDEA<br/>⚠️ Not recommended]
     click B "https://whichjdk.com" _blank
     style B fill:#e7f3ff,stroke:#0366d6,color:#0366d6
+    style D fill:#d4edda,stroke:#28a745,color:#155724
     style I fill:#fff3cd,stroke:#856404,color:#856404
 ```
 
