@@ -1,0 +1,10 @@
+---
+---
+
+@import "minima";
+
+// Increase theme's default content width by ~15%
+.wrapper {
+  max-width: calc(#{$content-width} * 1.15);
+}
+
