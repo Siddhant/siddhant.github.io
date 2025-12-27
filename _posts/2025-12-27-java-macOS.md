@@ -104,10 +104,11 @@ All modern JDKs are built from OpenJDK, but vendors differ in:
 
 ```mermaid
 flowchart TD
-    A[Need help choosing a JDK?] --> B{Visit whichjdk.com}
+    A[Need help choosing a JDK?] --> B{whichjdk.com}
     B -->|You found a match| C[Pick the JDK that fits your case]
     B -->|Still confused| D[We recommend:<br/>Eclipse Temurin 21 LTS]
     click B "https://whichjdk.com" _blank
+    style B fill:#e7f3ff,stroke:#0366d6,color:#0366d6
 ```
 
 ## 1. Oracle OpenJDK
