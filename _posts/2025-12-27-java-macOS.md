@@ -108,15 +108,15 @@ flowchart TD
     A{Choose a JDK vendor & version} -->|Someone told you which one| C[Pick the JDK that fits your case]
     A -->|Need help| B{whichjdk.com}
     B -->|You found a match| C
-    B -->|Still confused| D[Eclipse Temurin 21 (LTS)<br/>(recommended)]
+    B -->|Still confused| D[Eclipse Temurin 21 LTS<br>recommended]
     C --> E{Choose an install tool}
     D --> E
-    E -->|Simple & native| F[Homebrew]
-    E -->|Multi-language polyglot| G[mise<br/>(recommended)]
-    E -->|Still confused| G[mise<br/>(recommended)]
+    E -->|Simple &amp; native| F[Homebrew]
+    E -->|Multi-language polyglot| G[mise<br>recommended]
+    E -->|Still confused| G[mise<br>recommended]
     E -->|Java-focused| H[SDKMAN]
-    E -->|Build-tool managed; reproducible| J[Gradle Foojay<br/>(recommended)]
-    E -->|IDE-based| I[IntelliJ IDEA<br/>⚠️ Not recommended]
+    E -->|Build-tool managed| J[Gradle Foojay<br>recommended]
+    E -->|IDE-based| I[IntelliJ IDEA<br>Not recommended]
     click B "https://whichjdk.com" _blank
     click F "https://brew.sh" _blank
     click G "https://mise.jdx.dev" _blank
