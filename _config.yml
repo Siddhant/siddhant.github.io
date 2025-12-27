@@ -33,6 +33,16 @@ github_username:  jekyll
 theme: minima
 plugins:
   - jekyll-feed
+  - jekyll-archives
+
+# Category/tag archives
+jekyll-archives:
+  enabled:
+    - categories
+  layout: archive
+  permalinks:
+    category: /categories/:name/
+    tag: /tags/:name/
 
 # Exclude from processing.
 # The following items will not be processed, by default.
