@@ -2,7 +2,7 @@
 layout: post
 title: "Planning SQLite Deployment to Production"
 date: 2025-09-01 02:28:47 +0530
-categories: database, SQLite
+categories: [database, SQLite]
 ---
 
 SQLite is a simple database, but even then, its production deployment can be complex and tricky.

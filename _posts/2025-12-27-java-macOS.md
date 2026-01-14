@@ -2,7 +2,7 @@
 layout: post
 title: "Setting Up Java on macOS in 2025 — A Practical, Opinionated Guide for Experienced Developers"
 date: 2025-12-27 11:07:47 +0530
-categories: java, macOS
+categories: [java, macOS]
 ---
 
 {% assign check = '<span style="color: #28a745;">✓</span>' %}
