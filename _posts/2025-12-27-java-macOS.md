@@ -12,16 +12,15 @@ This post is written for experienced developers who are new to macOS and want a 
 Prerequisites and Assumptions:
 - Apple Silicon (M-series chips such as M1, M2, M3, or later) — all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
 - macOS Tahoe 26.1
-
-- Java 25 (LTS) — ALWAYS use the LTS version only; for more info refer  [Java Almanac](https://javaalmanac.io/)
+- Java LTS — we cover LTS version(s) only, which is the sensible thing to (more on this later)
 
 # Table of Contents
 - [Why Java Setup on macOS Is “Different”](#why-java-setup-on-macos-is-different)
 - [Java 25 LTS: Why LTS Is the Only Sensible Default](#java-25-lts-why-lts-is-the-only-sensible-default)
-- [Select a JDK](#select-a-jdk)
 - [macOS Java Internals You Must Understand](#macos-java-internals-you-must-understand)
   - [/usr/bin/java — The Apple Java Wrapper](#usrbinjava--the-apple-java-wrapper)
   - [/usr/libexec/java_home — The Brain](#usrlibexecjava_home--the-brain)
+- [Step 1 - Select a JDK](#step-1---select-a-jdk)
 - [Installing Java on macOS — All Major Options](#installing-java-on-macos--all-major-options)
   - [1. GUI Installers (DMG / PKG)](#1-gui-installers-dmg--pkg)
   - [2. Homebrew](#2-homebrew)
@@ -48,28 +47,18 @@ Prerequisites and Assumptions:
 
 # Why Java Setup on macOS Is "Different"
 
-On Linux, Java setup is mostly transparent. On Windows, it is explicit.  
+On Linux, Java setup is mostly transparent (installation via package manager is straightforward).
+Similarly, on Windows, it is explicit (download an installer, and you are good to go).  
 On macOS, Java is **subtle**.
 
-macOS ships with:
-- A **Java launcher stub** at `/usr/bin/java`
-- A system utility called **`/usr/libexec/java_home`**
-
-But **macOS does not ship a JDK**.
-
-This distinction matters.
-
-Take a look at the output when you type `java`:
-
+Take a look at the output when you type `java` in a new Mac:
 ```bash
 $ java
 The operation couldn’t be completed. Unable to locate a Java Runtime.
 Please visit http://www.java.com for information on installing Java.
 ```
 
-macOS may respond with a dialog prompting you to install Java — even though no JDK is present. This behavior comes from Apple’s Java wrapper, not from Java itself.
-
-Understanding this wrapper is key to avoiding confusion later.
+The `java` command exists, even though no JDK is present! This behavior comes from Apple’s Java wrapper (more on this later), not from Java itself. Understanding this wrapper is key to avoiding confusion later.
 
 # Java 25 LTS: Why LTS Is the Only Sensible Default
 
@@ -92,7 +81,29 @@ To verify the current LTS release, rely on:
 
 ---
 
-# Select a JDK
+# macOS Java Internals You Must Understand
+
+## /usr/bin/java — The Apple Java Wrapper
+
+This binary:
+- Is provided by macOS
+- Delegates execution to the active JDK
+- Uses `JAVA_HOME` or `java_home` internally
+
+It is not the Java executable from your JDK.
+
+---
+
+## /usr/libexec/java_home — The Brain
+
+This utility:
+- Discovers installed JDKs
+- Selects versions based on constraints
+- Outputs the correct `JAVA_HOME`
+
+---
+
+# Step 1 - Select a JDK
 
 All modern JDKs are built from OpenJDK, but vendors differ in:
 - Licensing
@@ -128,28 +139,6 @@ flowchart TD
     style J fill:#d4edda,stroke:#28a745,color:#155724
     style I fill:#fff3cd,stroke:#856404,color:#856404
 ```
-
----
-
-# macOS Java Internals You Must Understand
-
-## /usr/bin/java — The Apple Java Wrapper
-
-This binary:
-- Is provided by macOS
-- Delegates execution to the active JDK
-- Uses `JAVA_HOME` or `java_home` internally
-
-It is not the Java executable from your JDK.
-
----
-
-## /usr/libexec/java_home — The Brain
-
-This utility:
-- Discovers installed JDKs
-- Selects versions based on constraints
-- Outputs the correct `JAVA_HOME`
 
 ---
 
