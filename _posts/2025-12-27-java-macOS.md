@@ -9,17 +9,16 @@ categories: [java, macOS]
 
 This post is written for experienced developers who are new to macOS and want a **clean, modern, and professional-grade Java setup**. The focus is deliberately narrow. We will not cover basics like "What is the difference between JRE and JDK?". We *will* explain, in deailt, macOS-specific Java behavior, vendor differences, and why certain approaches scale better over time.
 
-- Apple Silicon (M-series chips such as M1, M2, M3, or later) - all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
+Prerequisites and Assumptions:
+- Apple Silicon (M-series chips such as M1, M2, M3, or later) — all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
 - macOS Tahoe 26.1
+
 - Java 25 (LTS) — ALWAYS use the LTS version only; for more info refer  [Java Almanac](https://javaalmanac.io/)
 
 # Table of Contents
 - [Why Java Setup on macOS Is “Different”](#why-java-setup-on-macos-is-different)
 - [Java 25 LTS: Why LTS Is the Only Sensible Default](#java-25-lts-why-lts-is-the-only-sensible-default)
-- [JDK Vendors You Should Care About](#jdk-vendors-you-should-care-about)
-  - [1. Oracle OpenJDK](#1-oracle-openjdk)
-  - [2. Eclipse Temurin (Adoptium)](#2-eclipse-temurin-adoptium)
-  - [3. Amazon Corretto](#3-amazon-corretto)
+- [Select a JDK](#select-a-jdk)
 - [macOS Java Internals You Must Understand](#macos-java-internals-you-must-understand)
   - [/usr/bin/java — The Apple Java Wrapper](#usrbinjava--the-apple-java-wrapper)
   - [/usr/libexec/java_home — The Brain](#usrlibexecjava_home--the-brain)
