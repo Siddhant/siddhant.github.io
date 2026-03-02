@@ -7,12 +7,12 @@ categories: [java, macOS]
 
 {% assign check = '<span style="color: #28a745;">✓</span>' %}
 
-This post is written for experienced developers who are new to macOS and want a **clean, modern, and professional-grade Java setup**. The focus is deliberately narrow. We will not cover basics like "What is the difference between JRE and JDK?". We *will* explain, in deailt, macOS-specific Java behavior, vendor differences, and why certain approaches scale better over time.
+This post is written for experienced developers who are new to macOS and want a **clean, modern, and professional-grade Java setup**. The focus is deliberately narrow. We will not cover basics like "What is the difference between JRE and JDK?". We *will* explain, in deailt, macOS-specific Java behavior, vendor differences, and why certain approaches scale better over time. This is an opinionated guide.
 
 Prerequisites and Assumptions:
 - Apple Silicon (M-series chips such as M1, M2, M3, or later) — all installation methods, paths, and recommendations are made with the ARM64 ("aarch64") macOS ecosystem in mind.
 - macOS Tahoe 26.1
-- Java LTS — we cover LTS version(s) only, which is the sensible thing to (more on this later)
+- Java LTS — we cover LTS version(s) only, which is the sensible thing to do (more on this later)
 
 # Table of Contents
 - [Why Java Setup on macOS Is “Different”](#why-java-setup-on-macos-is-different)
@@ -249,13 +249,14 @@ asdf global java temurin-25
 
 ## 5. mise (formerly rtx)
 
-Homepage: https://mise.jdx.dev
+Homepage: [https://mise.jdx.dev]
+Java page: [https://mise.jdx.dev/lang/java.html]
 
 Install Java:
 
 ```bash
-mise install java@25
-mise use -g java@25
+# intall the Temurin JDK21 and make it the global default
+mise use -g java@temurin-21
 ```
 
 **Pros**
@@ -337,6 +338,8 @@ For any serious development, use a proper toolchain manager (Homebrew, SDKMAN, o
 ---
 
 # Setting JAVA_HOME Correctly on macOS
+
+While the `java` an `javac` commnds are now aviable in your $PATH, some build tools (e.g. Gradle) explicitly require the JAVA_HOME environment variable.
 
 ## Recommended (Dynamic)
 
