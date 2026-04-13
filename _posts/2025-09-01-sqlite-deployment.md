@@ -58,9 +58,10 @@ database/
       my-app-dev.sqlite
     production/
       my-app-prod.sqlite
-      my-app-prod-2025-09-01.sqlite
+      my-app-prod-2025-09-01-01-23-15.sqlite
     test/
-      my-app-test.sqlite
+      my-app-test-1.sqlite
+      my-app-test-2.sqlite
   scripts/
     apply-sql.sh
     copy-db-prod-to-dev.sh
@@ -97,11 +98,12 @@ Contains environment-specific SQLite database files.
 | Path                                            | Description                                                                                                              |
 |-------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
 | `.../development/`                            | Stores the developer-specific SQLite database files. These files should *never* be checked into version control. |
-| `.../production/`                             | On the production server: stores the live database. On a developer machine: stores temporary copies for debugging. These files should *never* be checked into version control. |
+| `.../production/`                             | On the production server: stores the live database. On a developer machine: stores temporary copies of production db for debugging. These files should *never* be checked into version control. |
 | `.../production/my-app-prod.sqlite`           | The live production database file. Created on Day 0 by `day-0.sh`. |
-| `.../production/my-app-prod-2025-09-01.sqlite`| A temporary copy of the prod db file. Always suffixed with the date (and time) of copy. |
-| `.../test/`                                   | Stores test data for the project's unit tests. Should be checked into version control.  |
-| `.../test/my-app-test.sqlite`                 | Test data for the project's unit tests. Should be checked into version control.         |
+| `.../production/my-app-prod-2025-09-01-01-23-15.sqlite`| A temporary copy of the prod db file. Always suffixed with the date (and time) of copy. |
+| `.../test/`                                   | Stores test db(s) for the project's unit tests. Should be checked into version control.  |
+| `.../test/my-app-test-1.sqlite`                 | Test db for the project's unit tests. Should be checked into version control.         |
+| `.../test/my-app-test-2.sqlite`                 | A different test db for different tests. Should be checked into version control.         |
 
 ### Scripts (`database/scripts/`)
 Contains utility scripts for database management and deployment.
@@ -216,7 +218,7 @@ A brief checklist for the first day your application is live:
 - [ ] No lock errors in application logs
 - [ ] Run `db-maintenance.sh production` for a health snapshot
 
-# Day N: Ongoing Database Operations
+# Day N - Ongoing Database Operations
 
 After Day 1, you will need to make changes to the database: adding columns, creating tables, fixing data, loading historical records. This section covers the procedures for each.
 
@@ -331,7 +333,7 @@ When you need to load a CSV or bulk dataset (e.g., historical records, reference
    ./database/scripts/db-maintenance.sh production
    ```
 
-# Day B: Production Database Backup
+# Day B - Production Database Backup
 
 TODO
 
