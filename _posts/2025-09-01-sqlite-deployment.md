@@ -808,35 +808,35 @@ import java.util.Map;
 
 /** Database path resolution — mirrors db-constants.sh on the code side. */
 public final class DbPaths {
-    /** Utility class — not instantiable. */
-    private DbPaths() {}
+  /** Utility class — not instantiable. */
+  private DbPaths() {}
 
-    public enum Env { PRODUCTION, DEVELOPMENT, TEST }
+  public enum Env { PRODUCTION, DEVELOPMENT, TEST }
 
-    private static final String APP_NAME = "my-app";
-    private static final Path DB_ROOT = Path.of("database/db");
+  private static final String APP_NAME = "my-app";
+  private static final Path DB_ROOT = Path.of("database/db");
 
-    public static final Path PROD_DB = DB_ROOT.resolve("production").resolve(APP_NAME + "-prod.sqlite");
-    public static final Path DEV_DB  = DB_ROOT.resolve("development").resolve(APP_NAME + "-dev.sqlite");
+  public static final Path PROD_DB = DB_ROOT.resolve("production").resolve(APP_NAME + "-prod.sqlite");
+  public static final Path DEV_DB  = DB_ROOT.resolve("development").resolve(APP_NAME + "-dev.sqlite");
 
-    public static final Map<String, Path> TEST_DBS = Map.of(
-        "1", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-1.sqlite"),
-        "2", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-2.sqlite")
-    );
+  public static final Map<String, Path> TEST_DBS = Map.of(
+    "1", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-1.sqlite"),
+    "2", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-2.sqlite")
+  );
 
-    /** Resolves the database path for the given environment (defaults the test baseline to "1"). */
-    public static Path dbPath(Env env) {
-        return dbPath(env, "1");
-    }
+  /** Resolves the database path for the given environment (defaults the test baseline to "1"). */
+  public static Path dbPath(Env env) {
+    return dbPath(env, "1");
+  }
 
-    /** Resolves the database path for the given environment and test baseline. */
-    public static Path dbPath(Env env, String testDb) {
-        return switch (env) {
-            case PRODUCTION -> PROD_DB;
-            case DEVELOPMENT -> DEV_DB;
-            case TEST -> TEST_DBS.get(testDb);
-        };
-    }
+  /** Resolves the database path for the given environment and test baseline. */
+  public static Path dbPath(Env env, String testDb) {
+    return switch (env) {
+      case PRODUCTION -> PROD_DB;
+      case DEVELOPMENT -> DEV_DB;
+      case TEST -> TEST_DBS.get(testDb);
+    };
+  }
 }
 ```
 
@@ -853,30 +853,30 @@ import java.util.List;
 
 /** Opens SQLite connections with the standard pragmas applied. */
 public final class Db {
-    /** Utility class — not instantiable. */
-    private Db() {}
+  /** Utility class — not instantiable. */
+  private Db() {}
 
-    // Re-applied on every connect — foreign_keys and busy_timeout are per-connection.
-    private static final List<String> PRAGMAS = List.of(
-        "PRAGMA journal_mode=WAL",
-        "PRAGMA foreign_keys=ON",
-        "PRAGMA busy_timeout=5000",
-        "PRAGMA synchronous=NORMAL"
-    );
+  // Re-applied on every connect — foreign_keys and busy_timeout are per-connection.
+  private static final List<String> PRAGMAS = List.of(
+    "PRAGMA journal_mode=WAL",
+    "PRAGMA foreign_keys=ON",
+    "PRAGMA busy_timeout=5000",
+    "PRAGMA synchronous=NORMAL"
+  );
 
-    /** Opens a connection to the database file at the given path. */
-    public static Connection connect(Path path) throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:" + path);
-        try (Statement st = conn.createStatement()) {
-            for (String p : PRAGMAS) st.execute(p);
-        }
-        return conn;
+  /** Opens a connection to the database file at the given path. */
+  public static Connection connect(Path path) throws SQLException {
+    Connection conn = DriverManager.getConnection("jdbc:sqlite:" + path);
+    try (Statement st = conn.createStatement()) {
+      for (String p : PRAGMAS) st.execute(p);
     }
+    return conn;
+  }
 
-    /** Opens a connection using the APP_ENV environment variable to choose the environment. */
-    public static Connection connect() throws SQLException {
-        return connect(DbPaths.dbPath(DbPaths.Env.valueOf(System.getenv("APP_ENV").toUpperCase())));
-    }
+  /** Opens a connection using the APP_ENV environment variable to choose the environment. */
+  public static Connection connect() throws SQLException {
+    return connect(DbPaths.dbPath(DbPaths.Env.valueOf(System.getenv("APP_ENV").toUpperCase())));
+  }
 }
 ```
 
@@ -892,22 +892,22 @@ import java.sql.SQLException;
 
 /** Helper for opening a per-test copy of a checked-in test baseline. */
 public final class TestDb {
-    /** Utility class — not instantiable. */
-    private TestDb() {}
+  /** Utility class — not instantiable. */
+  private TestDb() {}
 
-    /**
-     * Copies the named test baseline into tempDir and opens a connection to the copy.
-     * The checked-in baseline file is never mutated.
-     *
-     * @param tempDir  per-test scratch directory (e.g. JUnit 5 {@code @TempDir})
-     * @param baseline test-db key ("1" or "2") from {@link DbPaths#TEST_DBS}
-     */
-    public static Connection open(Path tempDir, String baseline) throws IOException, SQLException {
-        Path source = DbPaths.TEST_DBS.get(baseline);
-        Path dest = tempDir.resolve(source.getFileName());
-        Files.copy(source, dest);
-        return Db.connect(dest);
-    }
+  /**
+   * Copies the named test baseline into tempDir and opens a connection to the copy.
+   * The checked-in baseline file is never mutated.
+   *
+   * @param tempDir  per-test scratch directory (e.g. JUnit 5 {@code @TempDir})
+   * @param baseline test-db key ("1" or "2") from {@link DbPaths#TEST_DBS}
+   */
+  public static Connection open(Path tempDir, String baseline) throws IOException, SQLException {
+    Path source = DbPaths.TEST_DBS.get(baseline);
+    Path dest = tempDir.resolve(source.getFileName());
+    Files.copy(source, dest);
+    return Db.connect(dest);
+  }
 }
 ```
 
@@ -927,27 +927,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserServiceTest {
-    @TempDir Path tempDir;
+  @TempDir Path tempDir;
 
-    /** Asserts the seeded user count against baseline 1. */
-    @Test
-    void countsUsers() throws Exception {
-        try (Connection db = TestDb.open(tempDir, "1");
-             Statement st = db.createStatement();
-             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM users")) {
-            rs.next();
-            assertEquals(3, rs.getInt(1));
-        }
+  /** Asserts the seeded user count against baseline 1. */
+  @Test
+  void countsUsers() throws Exception {
+    try (Connection db = TestDb.open(tempDir, "1");
+      Statement st = db.createStatement();
+      ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM users")) {
+      rs.next();
+      assertEquals(3, rs.getInt(1));
     }
+  }
 
-    /** Verifies an APAC region exists in baseline 2. */
-    @Test
-    void readsRegionCodes() throws Exception {
-        try (Connection db = TestDb.open(tempDir, "2");
-             Statement st = db.createStatement();
-             ResultSet rs = st.executeQuery("SELECT code FROM regions WHERE code = 'APAC'")) {
-            assertTrue(rs.next());
-        }
+  /** Verifies an APAC region exists in baseline 2. */
+  @Test
+  void readsRegionCodes() throws Exception {
+    try (Connection db = TestDb.open(tempDir, "2");
+      Statement st = db.createStatement();
+      ResultSet rs = st.executeQuery("SELECT code FROM regions WHERE code = 'APAC'")) {
+      assertTrue(rs.next());
     }
+  }
 }
 ```
