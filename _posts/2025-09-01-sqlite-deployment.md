@@ -36,6 +36,8 @@ SQLite is a simple database, but even then, its production deployment can be com
   - [install-upgrade-sqlite.sh](#install-upgrade-sqlitesh)
   - [db-maintenance.sh](#db-maintenancesh)
   - [copy-db-prod-to-dev.sh](#copy-db-prod-to-devsh)
+  - [Python Application using SQLite](#python-application-using-sqlite)
+  - [Java Application using SQLite](#java-application-using-sqlite)
 
 # Timeline
 - `Day 0` - when you deploy your application to production for the first time
@@ -680,4 +682,272 @@ mkdir -p "$LOGS_DIR"
 echo "[$TIMESTAMP] COPY prod -> dev ($DB_PROD_FILE -> $DB_DEV_FILE)" >> "$LOGS_DIR/database-operations.log"
 
 echo "Successfully copied production database to development."
+```
+
+## Python Application using SQLite
+
+### Directory additions
+```tree
+app/
+  __init__.py
+  db_paths.py
+  db.py
+tests/
+  conftest.py
+  test_users.py
+```
+
+### db_paths.py
+```python
+from enum import StrEnum
+from pathlib import Path
+
+class Env(StrEnum):
+    PROD = "production"
+    DEV  = "development"
+    TEST = "test"
+
+APP_NAME = "my-app"
+DB_ROOT = Path("database/db")
+
+PROD_DB = DB_ROOT / "production"  / f"{APP_NAME}-prod.sqlite"
+DEV_DB  = DB_ROOT / "development" / f"{APP_NAME}-dev.sqlite"
+
+TEST_DBS = {
+    "1": DB_ROOT / "test" / f"{APP_NAME}-test-1.sqlite",
+    "2": DB_ROOT / "test" / f"{APP_NAME}-test-2.sqlite",
+}
+
+def db_path(env: Env, test_db: str = "1") -> Path:
+    if env is Env.TEST:
+        return TEST_DBS[test_db]
+    return {Env.PROD: PROD_DB, Env.DEV: DEV_DB}[env]
+```
+
+### db.py
+```python
+import os
+import sqlite3
+from pathlib import Path
+from app.db_paths import Env, db_path
+
+# Re-applied on every connect — foreign_keys and busy_timeout are per-connection.
+PRAGMAS = (
+    "PRAGMA journal_mode=WAL",
+    "PRAGMA foreign_keys=ON",
+    "PRAGMA busy_timeout=5000",
+    "PRAGMA synchronous=NORMAL",
+)
+
+def connect(path: Path | None = None) -> sqlite3.Connection:
+    if path is None:
+        path = db_path(Env(os.environ["APP_ENV"]))
+    conn = sqlite3.connect(path)
+    for p in PRAGMAS:
+        conn.execute(p)
+    return conn
+```
+
+### conftest.py
+```python
+import shutil
+import sqlite3
+import pytest
+from app.db import connect
+from app.db_paths import TEST_DBS
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "test_db(name): select test baseline (1 or 2)")
+
+@pytest.fixture
+def test_db(tmp_path, request) -> sqlite3.Connection:
+    marker = request.node.get_closest_marker("test_db")
+    name = marker.args[0] if marker else "1"
+    # Copy per test — the checked-in baseline file is never mutated.
+    dest = tmp_path / TEST_DBS[name].name
+    shutil.copy(TEST_DBS[name], dest)
+    conn = connect(dest)
+    yield conn
+    conn.close()
+```
+
+### test_users.py
+```python
+import pytest
+
+def test_user_count(test_db):
+    assert test_db.execute("SELECT COUNT(*) FROM users").fetchone()[0] == 3
+
+@pytest.mark.test_db("2")
+def test_region_codes(test_db):
+    rows = test_db.execute("SELECT code FROM regions").fetchall()
+    assert ("APAC",) in rows
+```
+
+## Java Application using SQLite
+
+Requires the `org.xerial:sqlite-jdbc` artifact on the classpath.
+
+### Directory additions
+```tree
+src/main/java/com/example/app/db/
+  DbPaths.java
+  Db.java
+src/test/java/com/example/app/
+  UserServiceTest.java
+  db/
+    TestDb.java
+```
+
+### DbPaths.java
+```java
+package com.example.app.db;
+
+import java.nio.file.Path;
+import java.util.Map;
+
+/** Database path resolution — mirrors db-constants.sh on the code side. */
+public final class DbPaths {
+    /** Utility class — not instantiable. */
+    private DbPaths() {}
+
+    public enum Env { PRODUCTION, DEVELOPMENT, TEST }
+
+    private static final String APP_NAME = "my-app";
+    private static final Path DB_ROOT = Path.of("database/db");
+
+    public static final Path PROD_DB = DB_ROOT.resolve("production").resolve(APP_NAME + "-prod.sqlite");
+    public static final Path DEV_DB  = DB_ROOT.resolve("development").resolve(APP_NAME + "-dev.sqlite");
+
+    public static final Map<String, Path> TEST_DBS = Map.of(
+        "1", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-1.sqlite"),
+        "2", DB_ROOT.resolve("test").resolve(APP_NAME + "-test-2.sqlite")
+    );
+
+    /** Resolves the database path for the given environment (defaults the test baseline to "1"). */
+    public static Path dbPath(Env env) {
+        return dbPath(env, "1");
+    }
+
+    /** Resolves the database path for the given environment and test baseline. */
+    public static Path dbPath(Env env, String testDb) {
+        return switch (env) {
+            case PRODUCTION -> PROD_DB;
+            case DEVELOPMENT -> DEV_DB;
+            case TEST -> TEST_DBS.get(testDb);
+        };
+    }
+}
+```
+
+### Db.java
+```java
+package com.example.app.db;
+
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+
+/** Opens SQLite connections with the standard pragmas applied. */
+public final class Db {
+    /** Utility class — not instantiable. */
+    private Db() {}
+
+    // Re-applied on every connect — foreign_keys and busy_timeout are per-connection.
+    private static final List<String> PRAGMAS = List.of(
+        "PRAGMA journal_mode=WAL",
+        "PRAGMA foreign_keys=ON",
+        "PRAGMA busy_timeout=5000",
+        "PRAGMA synchronous=NORMAL"
+    );
+
+    /** Opens a connection to the database file at the given path. */
+    public static Connection connect(Path path) throws SQLException {
+        Connection conn = DriverManager.getConnection("jdbc:sqlite:" + path);
+        try (Statement st = conn.createStatement()) {
+            for (String p : PRAGMAS) st.execute(p);
+        }
+        return conn;
+    }
+
+    /** Opens a connection using the APP_ENV environment variable to choose the environment. */
+    public static Connection connect() throws SQLException {
+        return connect(DbPaths.dbPath(DbPaths.Env.valueOf(System.getenv("APP_ENV").toUpperCase())));
+    }
+}
+```
+
+### TestDb.java
+```java
+package com.example.app.db;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+/** Helper for opening a per-test copy of a checked-in test baseline. */
+public final class TestDb {
+    /** Utility class — not instantiable. */
+    private TestDb() {}
+
+    /**
+     * Copies the named test baseline into tempDir and opens a connection to the copy.
+     * The checked-in baseline file is never mutated.
+     *
+     * @param tempDir  per-test scratch directory (e.g. JUnit 5 {@code @TempDir})
+     * @param baseline test-db key ("1" or "2") from {@link DbPaths#TEST_DBS}
+     */
+    public static Connection open(Path tempDir, String baseline) throws IOException, SQLException {
+        Path source = DbPaths.TEST_DBS.get(baseline);
+        Path dest = tempDir.resolve(source.getFileName());
+        Files.copy(source, dest);
+        return Db.connect(dest);
+    }
+}
+```
+
+### UserServiceTest.java
+```java
+package com.example.app;
+
+import com.example.app.db.TestDb;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class UserServiceTest {
+    @TempDir Path tempDir;
+
+    /** Asserts the seeded user count against baseline 1. */
+    @Test
+    void countsUsers() throws Exception {
+        try (Connection db = TestDb.open(tempDir, "1");
+             Statement st = db.createStatement();
+             ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM users")) {
+            rs.next();
+            assertEquals(3, rs.getInt(1));
+        }
+    }
+
+    /** Verifies an APAC region exists in baseline 2. */
+    @Test
+    void readsRegionCodes() throws Exception {
+        try (Connection db = TestDb.open(tempDir, "2");
+             Statement st = db.createStatement();
+             ResultSet rs = st.executeQuery("SELECT code FROM regions WHERE code = 'APAC'")) {
+            assertTrue(rs.next());
+        }
+    }
+}
 ```
